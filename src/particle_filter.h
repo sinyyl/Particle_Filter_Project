@@ -1,3 +1,4 @@
+ *
 /**
  * particle_filter.h
  * 2D particle filter class.
@@ -12,6 +13,7 @@
 #include <string>
 #include <vector>
 #include "helper_functions.h"
+#include <random>
 
 struct Particle {
   int id;
@@ -118,8 +120,15 @@ class ParticleFilter {
   // Flag, if filter is initialized
   bool is_initialized;
   
+  // random generator
+  //std::default_random_engine generator;
+  
   // Vector of weights of all particles
   std::vector<double> weights; 
+  // the maximum weight of the particle
+  //int  maxWeight;
+  double multiv_prob(double sig_x, double sig_y, double x_obs, double y_obs,
+                   double mu_x, double mu_y);
 };
 
 #endif  // PARTICLE_FILTER_H_
