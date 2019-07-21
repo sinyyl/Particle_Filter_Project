@@ -16,8 +16,7 @@
 #include <string>
 #include <vector>
 #include <limits>
-#include <stdlib.h>  
-#include <time.h>       
+    
 #include "helper_functions.h"
 
 using std::string;
@@ -25,7 +24,7 @@ using std::vector;
 using std::sin;
 using std::cos;
 using std::pow;
-using std::sqrt;
+
 
 void ParticleFilter::init(double x, double y, double theta, double std[]) {
   /**
@@ -113,7 +112,8 @@ void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted,
       double x_pre = observations[j].x;  //read in the observations x, y coordinates
       double y_pre = observations[j].y;
       double thisDistance = dist(x_obs, y_obs, x_pre, y_pre);
-      if(thisDistance < minDistance){
+
+      if(thisDistance <= minDistance){
         minDistance = thisDistance;    // update the new min
         associatedID = j;
       }
