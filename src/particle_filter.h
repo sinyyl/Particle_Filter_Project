@@ -1,4 +1,3 @@
- *
 /**
  * particle_filter.h
  * 2D particle filter class.
@@ -97,6 +96,11 @@ class ParticleFilter {
                        const std::vector<double>& sense_x, 
                        const std::vector<double>& sense_y);
 
+
+
+  double multiv_prob(double sig_x, double sig_y, double x_obs, double y_obs,
+                   double mu_x, double mu_y);
+
   /**
    * initialized Returns whether particle filter is initialized yet or not.
    */
@@ -120,15 +124,12 @@ class ParticleFilter {
   // Flag, if filter is initialized
   bool is_initialized;
   
-  // random generator
-  //std::default_random_engine generator;
-  
   // Vector of weights of all particles
   std::vector<double> weights; 
-  // the maximum weight of the particle
-  //int  maxWeight;
-  double multiv_prob(double sig_x, double sig_y, double x_obs, double y_obs,
-                   double mu_x, double mu_y);
+  
+  // random generator
+  std::default_random_engine generator;
+
 };
 
 #endif  // PARTICLE_FILTER_H_
