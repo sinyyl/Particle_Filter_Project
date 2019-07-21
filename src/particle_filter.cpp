@@ -41,7 +41,7 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
   std::normal_distribution<double> distribution_x(x, std[0]);
   std::normal_distribution<double> distribution_y(y, std[1]);
   std::normal_distribution<double> distribution_theta(theta, std[2]);
-  std::default_random_engine generator;
+  //std::default_random_engine generator;
   
   num_particles = 100;  // TODO: Set the number of particles
   // assign default values to the particles
@@ -66,7 +66,7 @@ void ParticleFilter::prediction(double delta_t, double std_pos[],
    *  http://en.cppreference.com/w/cpp/numeric/random/normal_distribution
    *  http://www.cplusplus.com/reference/random/default_random_engine/
    */
-    std::default_random_engine generator;
+    //std::default_random_engine generator;
     // iterate through all particles
     for(int i=0; i<num_particles; i++){
       //Particle thisParticle = particles.at(i);
