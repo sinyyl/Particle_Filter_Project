@@ -25,6 +25,8 @@ using std::sin;
 using std::cos;
 using std::pow;
 
+using std::endl;
+using std::cout;
 
 void ParticleFilter::init(double x, double y, double theta, double std[]) {
   /**
@@ -35,26 +37,32 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
    * NOTE: Consult particle_filter.h for more information about this method 
    *   (and others in this file).
    */
-  // set the initialie flag to true
-  is_initialized = true;
+  // checl if it is initialized
+  if(is_initialized) {
+	return;
+  } 
   // create random generator for gaussian distributation
   std::normal_distribution<double> distribution_x(x, std[0]);
   std::normal_distribution<double> distribution_y(y, std[1]);
   std::normal_distribution<double> distribution_theta(theta, std[2]);
   //std::default_random_engine generator;
   
-  num_particles = 100;  // TODO: Set the number of particles
+  num_particles = 150;  // TODO: Set the number of particles
   // assign default values to the particles
   for(int i=0; i<num_particles; i++){
+    // temperory variable of particle
     Particle thisParticle;
     thisParticle.id = i;
     // add gaussian noise
     thisParticle.x = distribution_x(generator);
     thisParticle.y = distribution_y(generator);
     thisParticle.theta = distribution_theta(generator);
-    thisParticle.weight = 1;  // default weight is 1
+    thisParticle.weight = 1.0;  // default weight is 1.0
     particles.push_back(thisParticle); // add to the particles list
   }
+  //cout << "Initialized" << endl;
+  // set the initialie flag to true
+  is_initialized = true;
 }
 
 void ParticleFilter::prediction(double delta_t, double std_pos[], 
@@ -68,6 +76,7 @@ void ParticleFilter::prediction(double delta_t, double std_pos[],
    */
     //std::default_random_engine generator;
     // iterate through all particles
+    //cout << "Before Predicted" << endl;
     for(int i=0; i<num_particles; i++){
       //Particle thisParticle = particles.at(i);
 
@@ -76,8 +85,17 @@ void ParticleFilter::prediction(double delta_t, double std_pos[],
       double this_y = particles[i].y;
       double this_theta = particles[i].theta;
       // calculate the predicted x, y and theta
-      double new_x = this_x +  velocity / yaw_rate * (sin(this_theta + yaw_rate * delta_t) - sin(this_theta));
-      double new_y = this_y +  velocity / yaw_rate * (cos(this_theta) - cos(this_theta + yaw_rate * delta_t));
+      double new_x;
+      double new_y;
+      // for low yaw rate
+      if(abs(yaw_rate) < 0.0001){
+        new_x = this_x +  velocity * delta_t * cos(this_theta);
+        new_y = this_y +  velocity * delta_t * sin(this_theta);
+      }else{
+        // normal situation
+        new_x = this_x +  velocity / yaw_rate * (sin(this_theta + yaw_rate * delta_t) - sin(this_theta));
+        new_y = this_y +  velocity / yaw_rate * (cos(this_theta) - cos(this_theta + yaw_rate * delta_t));
+      }
       double new_theta = this_theta + yaw_rate * delta_t;
       // add gaussian noise to the predicted data
       std::normal_distribution<double> distribution_x(new_x, std_pos[0]);
@@ -88,6 +106,7 @@ void ParticleFilter::prediction(double delta_t, double std_pos[],
       particles[i].y = distribution_y(generator);
       particles[i].theta = distribution_theta(generator);
     }
+    //cout << "Predicted" << endl;
 }
 
 void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted, 
@@ -123,6 +142,7 @@ void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted,
     observations[associatedID].id = predicted[i].id;
   }
   //observations = Newbservations;
+  //cout << "Associated" << endl;
 }
 
 void ParticleFilter::updateWeights(double sensor_range, double std_landmark[], 
@@ -241,6 +261,8 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
   }
   maxWeight = 1.0;  // assign the max weight to 1
 
+  //cout << "Updated" << endl;
+
 }
 
 
@@ -260,27 +282,10 @@ void ParticleFilter::resample() {
   }
   // assign the new particles to the particles instance variable
   particles = newParticles;
+
+  //cout << "Resampled" << endl;
   
-  /*
-  // the maximum weight is always 1.0 as shown in updateWeight function
-  double currentMaxWeight = 1.0;
-  // store the new picked particles
-  vector<Particle> newParticles;
-  srand (time(NULL));  // random seed 
-  int index = rand() % num_particles;
-  double beta = 0.0; // counter
-  for(int i=0; i<num_particles; i++){
-    beta +=  (rand() % 100)/100.0 * 2.0 * currentMaxWeight;
-    while(beta > particles[index].weight){
-      beta -= particles[index].weight;
-      index = (index + 1) % num_particles;
-    }
-    // this particle is picked
-    newParticles.push_back(particles[index]);
-  }
-  // assign the new particles to the particles instance variable
-  particles = newParticles;
-  */
+
 }
 
 
@@ -340,6 +345,6 @@ double ParticleFilter::multiv_prob(double sig_x, double sig_y, double x_obs, dou
   // calculate weight using normalization terms and exponent
   double weight;
   weight = gauss_norm * exp(-exponent);
-    
+  //cout << "Multivariable_Gaussianed" << endl;
   return weight;
 }
